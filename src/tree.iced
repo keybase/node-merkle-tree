@@ -214,13 +214,10 @@ exports.Base = class Base
 
   upsert : ({key, val}, cb) ->
 
-    console.log "back in..."
-
     # All happens with a lock
     cb = chain_err cb, @unlock.bind(@)
     esc = make_esc cb, "full_build"
     await @_lock.acquire defer()
-    console.log "acquired lock..."
 
     # Now find the root
     await @lookup_root esc defer root
