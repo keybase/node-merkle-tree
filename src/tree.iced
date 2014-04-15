@@ -141,7 +141,7 @@ exports.SortedMap = class SortedMap
       beg
     else beg
 
-    return [ beg, eq ]
+    return [ ret, eq ]
 
   #------------------------------------
 
@@ -249,15 +249,14 @@ exports.Base = class Base
         curr = null
 
     console.log "done with it..."
+    console.log path
 
     # Figure out what to store at the node where we stopped going
     # down the path.
-    [sorted_map, level] = if not last?
-      [ (new SortedMap { key, val }), path.length ]
-    else if last.type is node_types.INODE
-      [ (new SortedMap { key, val }), path.length + 1]
+    [sorted_map, level] = if not last? or (last.type is node_types.INODE)
+      [ (new SortedMap { key, val }), 0 ]
     else if not((v2 = last.tab[key])?) or not(deq(val, v2))
-      [ (new SortedMap { obj : last.tab }).replace({key,val}), path.length ]
+      [ (new SortedMap { obj : last.tab }).replace({key,val}), path.length - 1 ]
     else [ null, 0 ]
 
     console.log "chasing #{key}"
@@ -296,7 +295,11 @@ exports.Base = class Base
     err = null
     key = null
 
-    if sorted_map.len() < @config.N
+    console.log "hash_tree_r"
+    console.log level
+    console.log sorted_map
+
+    if sorted_map.len() <= @config.N
       {key, obj, obj_s} = sorted_map.to_hash { @hasher, type : node_types.LEAF }
       await @store_node { key, obj, obj_s }, defer err
     else

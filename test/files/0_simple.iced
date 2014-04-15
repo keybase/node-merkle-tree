@@ -15,7 +15,7 @@ exports.init = (T,cb) ->
 #===============================================================
 
 exports.do_inserts = (T,cb) ->
-  for i in [0...17]
+  for i in [0...10]
     {key, val} = obj_factory.produce()
     await mem_tree.upsert { key, val }, defer err
     T.no_error err
