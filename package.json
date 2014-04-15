@@ -1,0 +1,31 @@
+{
+  "name": "merkle-tree",
+  "version": "0.0.0",
+  "description": "A Merkle Tree skeleton, written in IcedCoffeeScript",
+  "main": "lib/main.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "make test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/keybase/node-merkle-tree"
+  },
+  "keywords": [
+    "Merkle",
+    "Tree"
+  ],
+  "author": "Maxwell Krohn",
+  "license": "BSD-3-Clause",
+  "bugs": {
+    "url": "https://github.com/keybase/node-merkle-tree/issues"
+  },
+  "homepage": "https://github.com/keybase/node-merkle-tree",
+  "dependencies": {
+    "iced-test": "0.0.10",
+    "iced-coffee-script": "^1.7.1-b",
+    "iced-utils": "^0.1.11"
+  }
+}

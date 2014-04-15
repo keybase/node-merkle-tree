@@ -1,11 +1,10 @@
 
-{json_stringify_sorted} = require('pgp-utils').util
 {Lock} = require('iced-utils').lock
 {chain_err,make_esc} = require 'iced-error'
 
 ##=======================================================================
 
-node_types = 
+exports.node_types = node_types = 
   NONE : 0
   INODE : 1
   LEAF : 2
@@ -47,11 +46,6 @@ list_to_tab = (list) ->
 
 tab_to_list = (tab) -> ([k,v] for k,v of tab)
 
-#------------------------------------
-
-JSS = (o) ->
-  json_stringify_sorted o, { sort_fn : hex_cmp } 
-
 #----------------------------------
 
 hex_len = (a) ->
@@ -88,7 +82,7 @@ hex_cmp = (a,b) ->
 ##=======================================================================
 
 # A sorted key-value map
-class SortedMap
+exports.SortedMap = class SortedMap
 
   #------------------------------------
 
@@ -131,7 +125,7 @@ class SortedMap
     type or= @_type
     parts = []
     tab = {}
-    for [k,v] of @_list
+    for [k,v] in @_list
       parts.push [JS(k), JS(v)].join(":")
       tab[k] = v
     tab = "{" + parts.join(",") + "}"
@@ -168,14 +162,13 @@ class SortedMap
   #------------------------------------
 
   replace : ({key, val}) ->
-    if @_obj 
     [ index, eq ] = @binary_search { key }
     @_list = @_list[0...index].concat([[key,val]]).concat(@_list[(index+eq)...])
     @
 
 ##=======================================================================
 
-class Config
+exports.Config = class Config
 
   #---------------------------------
 
@@ -190,7 +183,7 @@ class Config
   
 ##=======================================================================
 
-class MerkleTreeBase
+exports.Base = class Base
 
   #---------------------------------
   
