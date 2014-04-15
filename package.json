@@ -26,6 +26,7 @@
   "dependencies": {
     "iced-test": "0.0.10",
     "iced-coffee-script": "^1.7.1-b",
-    "iced-utils": "^0.1.11"
+    "iced-utils": "^0.1.11",
+    "iced-error": "0.0.8"
   }
 }

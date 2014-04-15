@@ -18,15 +18,6 @@ log_16 = (y) ->
     ret++
   return ret
 
-#-------------------------
-
-shallow_copy = (obj) ->
-  tab = {}
-  ret = { type : obj.type, tab }
-  for k,v of obj.tab
-    tab[k] = v
-  return ret
-
 #------------------------------------
 
 format_hex = (i, len) ->
@@ -177,7 +168,7 @@ exports.Config = class Config
   constructor : ( { @M, @N }) ->
     # If we have 2^M children per node, how many hex chars does it take to
     # represent it?
-    @C = Math.ceil(@M/4) 
+    @C = log_16 @M
 
   #---------------------------------
   
@@ -286,8 +277,8 @@ exports.Base = class Base
       {key, obj, obj_s} = sorted_map.to_hash { @hasher, type : node_types.LEAF }
       await @store_node { key, obj, obj_s }, defer err
     else
-      M = (1 << @const.M) # the number of children we have
-      C = @const.C        # the number of characters needed to represent it
+      M = @const.M  # the number of children we have
+      C = @const.C  # the number of characters needed to represent it
       j = 0
       new_sorted_map = new SortedMap {}
       for i in [0...M]
