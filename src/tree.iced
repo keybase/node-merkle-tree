@@ -1,5 +1,6 @@
-
-{Lock} = require('iced-utils').lock
+iutils = require 'iced-utils'
+{Lock} = iutils.lock
+{json_stringify_sorted} = iutils.util
 {chain_err,make_esc} = require 'iced-error'
 
 ##=======================================================================
@@ -17,6 +18,10 @@ log_16 = (y) ->
     y = (y >> 4)
     ret++
   return ret
+
+#------------------------------------
+
+JSS = (x) -> json_stringify_sorted x, { sort_fn : hex_cmp }
 
 #------------------------------------
 
@@ -285,6 +290,36 @@ exports.Base = class Base
       console.log "commited root #{h}"
 
     cb null
+
+  #-----------------------------------------
+
+  verify_node : ({key, node}, cb) ->
+    h = @hasher JSS node
+    err = null
+    if key isnt h
+      err = new Error "Node hash failed: #{key} != #{h}"
+    cb err
+
+  #-----------------------------------------
+
+  find : ({key, skip_verify}, cb) ->
+    esc = make_esc cb, "find"
+    val = null
+    await @lookup_root esc defer curr
+    level = 0
+    while curr?
+      await @lookup_node { key : curr }, esc defer node
+      unless skip_verify
+        await @verify_node { key : curr, node }, esc defer()
+      if node.type is node_types.LEAF
+        val = node.tab[key]
+        curr = null
+      else
+        p = @prefix_through_level { key, level }
+        curr = node.tab[p]
+      level++
+
+    cb null, val
 
   #-----------------------------------------
 

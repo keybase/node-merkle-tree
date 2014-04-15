@@ -14,6 +14,10 @@ exports.ObjFactory = class ObjFactory
 
   #----------------------------
 
+  dump_all : () -> @_objs
+
+  #----------------------------
+
   produce : () ->
     key = prng(16).toString 'hex'
     val = [ @_i++, key ]
