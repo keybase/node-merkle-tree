@@ -1,5 +1,5 @@
 
-main = require '../../src/main'
+main = require '../../lib/main'
 {ObjFactory} = require './obj_factory'
 {Config,MemTree,SortedMap} = main
 mem_tree = null
@@ -9,7 +9,7 @@ obj_factory = new ObjFactory()
 #===============================================================
 
 exports.init = (T,cb) ->
-  config = new Config { N : 256 , M : 16 }
+  config = new Config { N : 10, M : 16 }
   mem_tree = new MemTree { config }
   cb()
 
