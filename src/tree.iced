@@ -299,6 +299,17 @@ exports.Base = class Base
 
   #-----------------------------------------
 
+  build : ({sorted_map}, cb) ->
+    # All happens with a lock
+    cb = chain_err cb, @unlock.bind(@)
+    esc = make_esc cb, "full_build"
+    await @_lock.acquire defer()
+    await @hash_tree_r { level : 0, sorted_map }, esc defer h
+    await @commit_root { key : h}, esc defer()
+    cb null
+
+  #-----------------------------------------
+
   hash_tree_r : ({level, sorted_map }, cb) ->
     err = null
     key = null
