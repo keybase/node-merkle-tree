@@ -9,7 +9,7 @@ obj_factory = new ObjFactory()
 #===============================================================
 
 exports.init = (T,cb) ->
-  config = new Config { N : 10, M : 16 }
+  config = new Config { N : 100, M : 256 }
   mem_tree = new MemTree { config }
   cb()
 
