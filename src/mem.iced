@@ -19,18 +19,12 @@ exports.MemTree = class MemTree extends Base
 
   store_node : ({key, obj, obj_s}, cb) ->
     @_nodes[key] = { obj, obj_s }
-    console.log "store!"
-    console.log key
-    console.log JSON.stringify obj
     cb null
 
   lookup_node : ({key}, cb) ->
-    console.log "lookup -> #{key}"
     val = @_nodes[key]
     ret = val?.obj
     err = if ret? then null else new Error 'not found'
-    console.log " --> #{val?.obj_s}"
-    console.log typeof val?.obj
     cb err, ret
 
   lookup_root : (cb) ->

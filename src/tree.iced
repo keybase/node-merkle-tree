@@ -151,11 +151,8 @@ exports.SortedMap = class SortedMap
   #------------------------------------
 
   replace : ({key, val}) ->
-    console.log "replace #{key}"
-    console.log @_list
     [ index, eq ] = @binary_search { key }
     @_list = @_list[0...index].concat([[key,val]]).concat(@_list[(index+eq)...])
-    console.log @_list
     @
 
 ##=======================================================================
@@ -233,25 +230,15 @@ exports.Base = class Base
     last = null
     path = []
 
-    console.log "on a path-finding mission"
     # Find the path from the key up to the root
     while curr?
-      console.log "iter"
-      console.log curr
       p = @prefix_through_level { key, level : path.length }
-      console.log p
       path.push [ p, curr ] 
       last = curr
       if (nxt = curr.tab[p])?
-        console.log "lookup nxt -> #{nxt}"
         await @lookup_node { key : nxt }, esc defer curr
-        console.log " -> #{curr}"
       else
-        console.log "cur is null...."
         curr = null
-
-    console.log "done with it..."
-    console.log path
 
     # Figure out what to store at the node where we stopped going
     # down the path.
@@ -261,21 +248,13 @@ exports.Base = class Base
       [ (new SortedMap { obj : last.tab }).replace({key,val}), path.length - 1 ]
     else [ null, 0 ]
 
-    console.log "chasing #{key}"
-    console.log level
-    console.log sorted_map
-
     if sorted_map?
       # Store the leaf
       await @hash_tree_r { level, sorted_map }, esc defer tmp
       h = tmp
 
-      console.log "done with hash_tree_r -> #{h}"
-
       # Store back up to the root
       path.reverse()
-      console.log "path ->"
-      console.log path
 
       for [ p, curr ] in path when (curr.type is node_types.INODE)
         sm = (new SortedMap { node : curr }).replace { key : p, val : h }
@@ -284,10 +263,7 @@ exports.Base = class Base
         await @store_node { key, obj, obj_s }, esc defer()
 
       # It's always safe to back up until we store the root
-      console.log "commiting it ---> #{h}"
       await @commit_root {key : h}, esc defer()
-
-      console.log "commited root #{h}"
 
     cb null
 
@@ -326,10 +302,6 @@ exports.Base = class Base
   hash_tree_r : ({level, sorted_map }, cb) ->
     err = null
     key = null
-
-    console.log "hash_tree_r"
-    console.log level
-    console.log sorted_map
 
     if sorted_map.len() <= @config.N
       {key, obj, obj_s} = sorted_map.to_hash { @hasher, type : node_types.LEAF }
