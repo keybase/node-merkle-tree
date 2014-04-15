@@ -1,4 +1,4 @@
-deq = require 'deep-equal'
+
 {json_stringify_sorted} = require('pgp-utils').util
 {Lock} = require('iced-utils').lock
 {chain_err,make_esc} = require 'iced-error'
@@ -92,7 +92,10 @@ class SortedMap
 
   #------------------------------------
 
-  constructor : ({obj, list, sorted_list, key, val}) ->
+  constructor : ({node, obj, list, sorted_list, key, val}) ->
+    if node?
+      obj = node.tab
+      @_type = node.type
     if obj?
       list = ([k,v] for k,v of obj)
     else if sorted_list?
@@ -102,7 +105,14 @@ class SortedMap
       @_list = [ [ key, val] ] 
 
     if list? and not @_list?
-      list.sort (a,b) -> hex_cmp a[0], b[0]
+      sorted = true
+      for i in [0...list.length]
+        j = i + 1
+        if (j < list.length) and (hex_cmp(list[i][0], list[j][0])) > 0
+          sorted = false
+          break
+      unless sorted
+        list.sort (a,b) -> hex_cmp a[0], b[0]
       @_list = l
 
     if not @_list?
@@ -111,16 +121,24 @@ class SortedMap
   #------------------------------------
 
   slice : (a,b) -> new SortedMap { sorted_list : @_list[a...b] }
+  len : () -> @_list.length
+  at : (i) -> @_list[i]
 
   #------------------------------------
 
   to_hash : ({hasher, type} ) ->
     JS = JSON.stringify
+    type or= @_type
     parts = []
+    tab = {}
     for [k,v] of @_list
       parts.push [JS(k), JS(v)].join(":")
-    tab = parts.join ", "
-    """{ "tab" : #{tab}, "type" : type }"""
+      tab[k] = v
+    tab = "{" + parts.join(",") + "}"
+    obj_s """{"tab":#{tab},"type":#{type}}"""
+    obj = { tab, type }
+    hash = hasher(obj_s)
+    return { hash, obj, obj_s }
 
   #------------------------------------
 
@@ -161,8 +179,12 @@ class Config
 
   #---------------------------------
 
+  # @M - the number of children per node.
+  # @N - the maxium number of leaves before we resplit.
   constructor : ( { @M, @N }) ->
-    @C = log_16 @M  # For 256, get 2, etc...
+    # If we have 2^M children per node, how many hex chars does it take to
+    # represent it?
+    @C = Math.ceil(@M/4) 
 
   #---------------------------------
   
@@ -174,6 +196,7 @@ class MerkleTreeBase
   
   constructor : ({@config}) ->
     @_lock = new Lock
+    @hasher = @hash_fn.bind(@)
 
   #---------------------------------
 
@@ -181,26 +204,11 @@ class MerkleTreeBase
 
   #---------------------------------
 
-  hasher      : (s)                     -> @unimplemented()
+  hash_fn     : (s)                     -> @unimplemented()
   store_node  : ({key, obj, obj_s}, cb) -> @unimplemented()
   commit_root : ({key},             cb) -> @unimplemented()
   lookup_node : ({key},             cb) -> @unimplemented()
   lookup_root : (                   cb) -> @unimplemented()
-
-  #---------------------------------
-
-  list_to_hash : ({list, type}) ->
-    tab = list_to_tab list
-    @tab_to_hash { tab, type }
-
-  tab_to_hash : ({tab, type}) ->
-    obj = { tab, type }
-    @obj_to_hash obj
-
-  obj_to_hash : (obj) ->
-    obj_s = JSS obj
-    key = @hash obj_s
-    { key, obj, obj_s }
 
   #-----------------------------------------
 
@@ -265,9 +273,8 @@ class MerkleTreeBase
       # Store back up to the root
       path.reverse()
       for [ p, curr ] in path when (curr.type is node_types.INODE)
-        curr = shallow_copy curr
-        curr.tab[p] = h
-        {key, obj, obj_s} = @obj_to_hash curr
+        sm = (new SortedMap { node : curr }).replace { key : p, val : h }
+        {key, obj, obj_s} = sm.to_hash { @hasher }
         h = key
         await @store_node { key, obj, obj_s }, esc defer()
 
@@ -283,26 +290,27 @@ class MerkleTreeBase
     key = null
 
     if list.length < @const.N
-      {key, obj, obj_s } = @sorted_map.to_hash { hasher : @hasher.bind(@), type : node_types.LEAF }
+      {key, obj, obj_s} = sorted_map.to_hash { @hasher, type : node_types.LEAF }
       await @store_node { key, obj, obj_s }, defer err
     else
-      n = (1 << @M)
+      M = (1 << @const.M) # the number of children we have
+      C = @const.C        # the number of characters needed to represent it
       j = 0
-      tab = []
-      for i in [0...n]
-        prefix = format_hex i, @const.C
+      new_sorted_map = new SortedMap {}
+      for i in [0...M]
+        prefix = format_hex i, C
         start = j
-        while j < list.length and (@prefix_at_level({ level, obj : list[j] }) is prefix)
+        while j < sorted_map.len() and (@prefix_at_level({ level, obj : sorted_map.at(j) }) is prefix)
           j++
         end = j
         if end > start
-          sublist = list[start...end]
-          await @hash_tree_r { level : (level+1), list : sublist }, defer err, h
+          sublist = sorted_map[start...end]
+          await @hash_tree_r { level : (level+1), sorted_map : sublist }, defer err, h
           break if err?
-          prefix = @prefix_through_level { level, obj : sublist[0] }
-          tab.push [ prefix, h ]
+          prefix = @prefix_through_level { level, obj : sublist.at(0) }
+          new_sorted_map.push { key : prefix, val : h }
       unless err?
-        {key, obj, obj_s} = @list_to_hash { list : tab, type : node_types.INODE }
+        {key, obj, obj_s} = new_sorted_map.to_hash { @hasher, type : node_types.INODE }
         await @store_node { key, obj, obj_s }, defer err
 
     cb err, key
