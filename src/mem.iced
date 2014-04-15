@@ -14,16 +14,24 @@ exports.MemTree = class MemTree extends Base
   hash_fn : (s) -> 
     h = createHash('SHA512')
     h.update(s)
-    h.toString 'hex'
+    ret = h.digest().toString('hex')
+    ret
 
   store_node : ({key, obj, obj_s}, cb) ->
     @_nodes[key] = { obj, obj_s }
+    console.log "store!"
+    console.log key
+    console.log JSON.stringify obj
     cb null
 
   lookup_node : ({key}, cb) ->
-    obj = @_nodes[key]
-    err = if obj? then new Error 'not found' else null
-    cb err, obj
+    console.log "lookup -> #{key}"
+    val = @_nodes[key]
+    ret = val?.obj
+    err = if ret? then null else new Error 'not found'
+    console.log " --> #{val?.obj_s}"
+    console.log typeof val?.obj
+    cb err, ret
 
   lookup_root : (cb) ->
     cb null, @_root

@@ -17,7 +17,7 @@ exports.ObjFactory = class ObjFactory
   produce : () ->
     key = prng(16).toString 'hex'
     val = [ @_i++, key ]
-    @_obj[key] = val
+    @_objs[key] = val
     return { key, val }
 
 #===============================================================

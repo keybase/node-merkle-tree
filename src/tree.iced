@@ -25,18 +25,6 @@ format_hex = (i, len) ->
   buf.writeUInt32BE i, 0
   buf.toString('hex')[(8 - len)...]
 
-#------------------------------------
-
-list_to_tab = (list) ->
-  tab = {}
-  for pair in list
-    tab[pair[0]] = pair[1]
-  return tab
-
-#------------------------------------
-
-tab_to_list = (tab) -> ([k,v] for k,v of tab)
-
 #----------------------------------
 
 hex_len = (a) ->
@@ -78,6 +66,7 @@ exports.SortedMap = class SortedMap
   #------------------------------------
 
   constructor : ({node, obj, list, sorted_list, key, val}) ->
+
     if node?
       obj = node.tab
       @_type = node.type
@@ -98,7 +87,7 @@ exports.SortedMap = class SortedMap
           break
       unless sorted
         list.sort (a,b) -> hex_cmp a[0], b[0]
-      @_list = l
+      @_list = list
 
     if not @_list?
       @_list = []
@@ -111,6 +100,11 @@ exports.SortedMap = class SortedMap
 
   #------------------------------------
 
+  push : ({key,val}) ->
+    @_list.push [ key, val ]
+
+  #------------------------------------
+
   to_hash : ({hasher, type} ) ->
     JS = JSON.stringify
     type or= @_type
@@ -119,11 +113,11 @@ exports.SortedMap = class SortedMap
     for [k,v] in @_list
       parts.push [JS(k), JS(v)].join(":")
       tab[k] = v
-    tab = "{" + parts.join(",") + "}"
-    obj_s """{"tab":#{tab},"type":#{type}}"""
+    tab_s = "{" + parts.join(",") + "}"
+    obj_s = """{"tab":#{tab_s},"type":#{type}}"""
     obj = { tab, type }
-    hash = hasher(obj_s)
-    return { hash, obj, obj_s }
+    key = hasher(obj_s)
+    return { key, obj, obj_s }
 
   #------------------------------------
 
@@ -132,15 +126,14 @@ exports.SortedMap = class SortedMap
     end = @_list.length - 1
 
     while beg < end
-      mid = (end - beg) >> 1
+      mid = (end + beg) >> 1
       c = hex_cmp key, @_list[mid][0]
       if c > 0
         beg = mid + 1
-      else if c < 0
+      else 
         end = mid
 
     c = hex_cmp key, @_list[beg][0]
-
     eq = 0
     ret = if c > 0 then beg + 1
     else if c is 0
@@ -153,8 +146,11 @@ exports.SortedMap = class SortedMap
   #------------------------------------
 
   replace : ({key, val}) ->
+    console.log "replace #{key}"
+    console.log @_list
     [ index, eq ] = @binary_search { key }
     @_list = @_list[0...index].concat([[key,val]]).concat(@_list[(index+eq)...])
+    console.log @_list
     @
 
 ##=======================================================================
@@ -199,12 +195,14 @@ exports.Base = class Base
   obj_to_key : (o) -> o[0]
 
   prefix_at_level : ({level, key, obj}) -> 
+    C = @config.C
     key or= @obj_to_key obj
-    key[(level*@C)...(level+1)*@C]
+    key[(level*C)...(level+1)*C]
 
   prefix_through_level : ({level, key, obj}) -> 
     key or= @obj_to_key obj
-    key[0...(level+1)*@C]
+    C = @config.C
+    key[0...(level+1)*C]
 
   #-----------------------------------------
 
@@ -216,13 +214,16 @@ exports.Base = class Base
 
   upsert : ({key, val}, cb) ->
 
+    console.log "back in..."
+
     # All happens with a lock
     cb = chain_err cb, @unlock.bind(@)
     esc = make_esc cb, "full_build"
     await @_lock.acquire defer()
+    console.log "acquired lock..."
 
     # Now find the root
-    await @lookup_root defer root
+    await @lookup_root esc defer root
     curr = null
     if root?
       await @lookup_node { key : root }, esc defer curr
@@ -230,15 +231,24 @@ exports.Base = class Base
     last = null
     path = []
 
+    console.log "on a path-finding mission"
     # Find the path from the key up to the root
     while curr?
+      console.log "iter"
+      console.log curr
       p = @prefix_through_level { key, level : path.length }
+      console.log p
       path.push [ p, curr ] 
       last = curr
       if (nxt = curr.tab[p])?
+        console.log "lookup nxt -> #{nxt}"
         await @lookup_node { key : nxt }, esc defer curr
+        console.log " -> #{curr}"
       else
+        console.log "cur is null...."
         curr = null
+
+    console.log "done with it..."
 
     # Figure out what to store at the node where we stopped going
     # down the path.
@@ -250,12 +260,22 @@ exports.Base = class Base
       [ (new SortedMap { obj : last.tab }).replace({key,val}), path.length ]
     else [ null, 0 ]
 
-    if store_list?
+    console.log "chasing #{key}"
+    console.log level
+    console.log sorted_map
+
+    if sorted_map?
       # Store the leaf
-      await @hash_tree_r { level, sorted_map }, esc defer h
+      await @hash_tree_r { level, sorted_map }, esc defer tmp
+      h = tmp
+
+      console.log "done with hash_tree_r -> #{h}"
 
       # Store back up to the root
       path.reverse()
+      console.log "path ->"
+      console.log path
+
       for [ p, curr ] in path when (curr.type is node_types.INODE)
         sm = (new SortedMap { node : curr }).replace { key : p, val : h }
         {key, obj, obj_s} = sm.to_hash { @hasher }
@@ -263,7 +283,10 @@ exports.Base = class Base
         await @store_node { key, obj, obj_s }, esc defer()
 
       # It's always safe to back up until we store the root
-      await @commit_root h, esc defer()
+      console.log "commiting it ---> #{h}"
+      await @commit_root {key : h}, esc defer()
+
+      console.log "commited root #{h}"
 
     cb null
 
@@ -273,12 +296,12 @@ exports.Base = class Base
     err = null
     key = null
 
-    if list.length < @const.N
+    if sorted_map.len() < @config.N
       {key, obj, obj_s} = sorted_map.to_hash { @hasher, type : node_types.LEAF }
       await @store_node { key, obj, obj_s }, defer err
     else
-      M = @const.M  # the number of children we have
-      C = @const.C  # the number of characters needed to represent it
+      M = @config.M  # the number of children we have
+      C = @config.C  # the number of characters needed to represent it
       j = 0
       new_sorted_map = new SortedMap {}
       for i in [0...M]
