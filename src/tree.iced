@@ -48,7 +48,7 @@ map = {
 
 #----------------------------------
 
-hex_cmp = (a,b) ->
+exports.hex_cmp = hex_cmp = (a,b) ->
   a_len = hex_len(a)
   b_len = hex_len(b)
   ret = if a_len > b_len then 1
@@ -240,6 +240,8 @@ exports.Base = class Base
       else
         curr = null
 
+    ret = null
+
     # Figure out what to store at the node where we stopped going
     # down the path.
     [sorted_map, level] = if not last? or (last.type is node_types.INODE)
@@ -264,8 +266,9 @@ exports.Base = class Base
 
       # It's always safe to back up until we store the root
       await @commit_root {key : h, txinfo}, esc defer()
+      ret = h
 
-    cb null
+    cb null, ret
 
   #-----------------------------------------
 
