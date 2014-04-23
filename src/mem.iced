@@ -18,7 +18,9 @@ exports.MemTree = class MemTree extends Base
     ret
 
   store_node : ({key, obj, obj_s}, cb) ->
-    @_nodes[key] = { obj, obj_s }
+    # Re-parse the object in case the caller changes it out from underneath us,
+    # which they really shouldn't do, but it's very possible....
+    @_nodes[key] = { obj : JSON.parse(obj_s), obj_s }
     cb null
 
   lookup_node : ({key}, cb) ->

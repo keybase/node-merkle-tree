@@ -251,9 +251,6 @@ exports.Base = class Base
       [ (new SortedMap { obj : last.tab }).replace({key,val}), path.length - 1 ]
     else [ null, 0 ]
 
-    console.log sorted_map
-    console.log level
-
     if sorted_map?
       # Store the leaf
       await @hash_tree_r { level, sorted_map }, esc defer tmp
