@@ -9,14 +9,14 @@ obj_factory = new ObjFactory()
 #===============================================================
 
 exports.init = (T,cb) ->
-  config = new Config { N : 100, M : 256 }
+  config = new Config { N : 4, M : 16 }
   mem_tree = new MemTree { config }
   cb()
 
 #===============================================================
 
 do_inserts = (T,cb) ->
-  for i in [0...256]
+  for i in [0...1]
     {key, val} = obj_factory.produce()
     await mem_tree.upsert { key, val }, defer err
     T.no_error err
@@ -60,5 +60,18 @@ exports.do_inserts_2 = (T,cb) -> do_inserts T,cb
 #===============================================================
 
 exports.find_all_3 = (T,cb) -> find_all T,cb
+
+#===============================================================
+
+exports.update_all = (T,cb) ->
+  obj_factory.modify_some 2
+  for key,val of obj_factory.dump_all()
+    await mem_tree.upsert { key, val }, defer err
+    T.no_error err
+  cb()
+
+#===============================================================
+
+exports.find_all_4 = (T,cb) -> find_all T,cb
 
 #===============================================================

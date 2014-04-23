@@ -2,6 +2,7 @@ iutils = require 'iced-utils'
 {Lock} = iutils.lock
 {json_stringify_sorted} = iutils.util
 {chain_err,make_esc} = require 'iced-error'
+deq = require 'deep-equal'
 
 ##=======================================================================
 
@@ -249,6 +250,9 @@ exports.Base = class Base
     else if not((v2 = last.tab[key])?) or not(deq(val, v2))
       [ (new SortedMap { obj : last.tab }).replace({key,val}), path.length - 1 ]
     else [ null, 0 ]
+
+    console.log sorted_map
+    console.log level
 
     if sorted_map?
       # Store the leaf
