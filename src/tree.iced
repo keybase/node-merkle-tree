@@ -188,7 +188,7 @@ exports.Base = class Base
 
   hash_fn     : (s)                     -> @unimplemented()
   store_node  : ({key, obj, obj_s}, cb) -> @unimplemented()
-  commit_root : ({key},             cb) -> @unimplemented()
+  commit_root : ({key, txinfo},     cb) -> @unimplemented()
   lookup_node : ({key},             cb) -> @unimplemented()
   lookup_root : (                   cb) -> @unimplemented()
 
@@ -214,7 +214,7 @@ exports.Base = class Base
 
   #-----------------------------------------
 
-  upsert : ({key, val}, cb) ->
+  upsert : ({key, val, txinfo}, cb) ->
 
     # All happens with a lock
     cb = chain_err cb, @unlock.bind(@)
@@ -263,7 +263,7 @@ exports.Base = class Base
         await @store_node { key, obj, obj_s }, esc defer()
 
       # It's always safe to back up until we store the root
-      await @commit_root {key : h}, esc defer()
+      await @commit_root {key : h, txinfo}, esc defer()
 
     cb null
 
