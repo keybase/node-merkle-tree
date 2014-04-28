@@ -195,6 +195,12 @@ exports.Base = class Base
   store_node  : ({key, obj, obj_s}, cb) -> @unimplemented()
   commit_root : ({key, txinfo},     cb) -> @unimplemented()
   lookup_node : ({key},             cb) -> @unimplemented()
+
+  # Callback cb with an <err,String,Object> triple.
+  #  The err is set is an error was encountered.
+  #  The String is the hash of the root.
+  #  The Object, optional, is the the other data stored at the root node,
+  #    such as signatures or sequence numbers.
   lookup_root : (                   cb) -> @unimplemented()
 
   #-----------------------------------------
@@ -289,7 +295,7 @@ exports.Base = class Base
   find : ({key, skip_verify}, cb) ->
     esc = make_esc cb, "find"
     val = null
-    await @lookup_root esc defer curr
+    await @lookup_root esc defer curr, root_obj
     level = 0
     while curr?
       await @lookup_node { key : curr }, esc defer node
@@ -303,7 +309,7 @@ exports.Base = class Base
         curr = node.tab[p]
       level++
 
-    cb null, val
+    cb null, val, root_obj
 
   #-----------------------------------------
 
