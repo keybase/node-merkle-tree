@@ -164,7 +164,10 @@ exports.Config = class Config
 
   # @M - the number of children per node.
   # @N - the maxium number of leaves before we resplit.
-  constructor : ( { @M, @N }) ->
+  constructor : ( { M, N }) ->
+    @M = M or 256
+    @N = N or 256
+
     # If we have 2^M children per node, how many hex chars does it take to
     # represent it?
     @C = log_16 @M
@@ -177,7 +180,8 @@ exports.Base = class Base
 
   #---------------------------------
   
-  constructor : ({@config}) ->
+  constructor : ({config}) ->
+    @config = config or (new Config {})
     @_lock = new Lock
     @hasher = @hash_fn.bind(@)
 

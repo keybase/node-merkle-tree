@@ -1,6 +1,6 @@
 {
   "name": "merkle-tree",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "A Merkle Tree skeleton, written in IcedCoffeeScript",
   "main": "lib/main.js",
   "directories": {
