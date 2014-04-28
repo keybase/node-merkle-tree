@@ -180,7 +180,8 @@ exports.Base = class Base
 
   #---------------------------------
   
-  constructor : ({@config}) ->
+  constructor : ({config}) ->
+    @config = config or (new Config {})
     @_lock = new Lock
     @hasher = @hash_fn.bind(@)
 
