@@ -128,6 +128,7 @@ exports.SortedMap = class SortedMap
   #------------------------------------
 
   binary_search : ({key}) ->
+
     beg = 0
     end = @_list.length - 1
 
@@ -152,8 +153,11 @@ exports.SortedMap = class SortedMap
   #------------------------------------
 
   replace : ({key, val}) ->
-    [ index, eq ] = @binary_search { key }
-    @_list = @_list[0...index].concat([[key,val]]).concat(@_list[(index+eq)...])
+    if @_list.length 
+      [ index, eq ] = @binary_search { key }
+      @_list = @_list[0...index].concat([[key,val]]).concat(@_list[(index+eq)...])
+    else
+      @_list = [[key,val]]
     @
 
 ##=======================================================================
