@@ -238,6 +238,7 @@ exports.Base = class Base
 
     # Now find the root
     await @lookup_root esc defer root
+    prev_root = root
     curr = null
     if root?
       await @lookup_node { key : root }, esc defer curr
@@ -280,7 +281,7 @@ exports.Base = class Base
         await @store_node { key, obj, obj_s }, esc defer()
 
       # It's always safe to back up until we store the root
-      await @commit_root {key : h, txinfo}, esc defer()
+      await @commit_root {key : h, txinfo, prev_root }, esc defer()
       ret = h
 
     cb null, ret
