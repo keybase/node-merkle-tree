@@ -22,7 +22,7 @@ log_16 = (y) ->
 
 #------------------------------------
 
-JSS = (x) -> json_stringify_sorted x, { sort_fn : hex_cmp }
+JSS = (x) -> json_stringify_sorted x, { sort_fn : my_cmp }
 
 #------------------------------------
 
@@ -46,6 +46,23 @@ map = {
   0 : 0, 1 : 1, 2 : 2 , 3 : 3, 4 : 4, 5 : 5, 6 : 6, 7 : 7,
   8 : 8, 9 : 9, a : 10, b : 11, c : 12, d : 13, e : 14, f : 15 
 }
+
+#----------------------------------
+
+is_hex = (x) -> x.match /^[a-fA-F0-9]+$/
+
+#----------------------------------
+
+strcmp = (x,y) ->
+  if x < y then -1
+  else if x > y then 1
+  else 0 
+
+#----------------------------------
+
+exports.my_cmp = my_cmp = (a,b) ->
+  if is_hex(a) and is_hex(b) then hex_cmp(a,b)
+  else  strcmp(a,b)
 
 #----------------------------------
 
