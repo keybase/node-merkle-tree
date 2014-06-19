@@ -111,7 +111,7 @@ exports.SortedMap = class SortedMap
 
   #------------------------------------
 
-  to_hash : ({hasher, type} ) ->
+  to_hash : ({hasher, type, prev_root} ) ->
     JS = JSON.stringify
     type or= @_type
     parts = []
@@ -120,8 +120,10 @@ exports.SortedMap = class SortedMap
       parts.push [JS(k), JS(v)].join(":")
       tab[k] = v
     tab_s = "{" + parts.join(",") + "}"
-    obj_s = """{"tab":#{tab_s},"type":#{type}}"""
+    pr = if prev_root? then ('"prev_root":"' + prev_root + '",') else ""
+    obj_s = """{#{pr}"tab":#{tab_s},"type":#{type}}"""
     obj = { tab, type }
+    obj.prev_root if prev_root?
     key = hasher(obj_s)
     return { key, obj, obj_s }
 
@@ -274,9 +276,13 @@ exports.Base = class Base
       # Store back up to the root
       path.reverse()
 
-      for [ p, curr ] in path when (curr.type is node_types.INODE)
+      for [ p, curr ],i in path when (curr.type is node_types.INODE)
         sm = (new SortedMap { node : curr }).replace { key : p, val : h }
-        {key, obj, obj_s} = sm.to_hash { @hasher }
+
+        arg = { @hasher }
+        arg.prev_root = prev_root if i is (path.length - 1)
+        {key, obj, obj_s} = sm.to_hash arg
+
         h = key
         await @store_node { key, obj, obj_s }, esc defer()
 
