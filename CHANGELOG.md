@@ -1,3 +1,9 @@
+## 0.0.11 (2014-06-19)
+
+Features:
+
+  - Still include the prev_root on a full rebuild
+
 ## 0.0.10 (2014-06-19)
 
 Features:
