@@ -54,15 +54,15 @@ is_hex = (x) -> x.match /^[a-fA-F0-9]+$/
 #----------------------------------
 
 strcmp = (x,y) ->
-  if x < y then -1
-  else if x > y then 1
-  else 0 
+  if x is y then 0
+  else if x < y then -1
+  else 1
 
 #----------------------------------
 
 exports.my_cmp = my_cmp = (a,b) ->
   if is_hex(a) and is_hex(b) then hex_cmp(a,b)
-  else  strcmp(a,b)
+  else strcmp(a,b)
 
 #----------------------------------
 
@@ -139,8 +139,13 @@ exports.SortedMap = class SortedMap
     tab_s = "{" + parts.join(",") + "}"
     pr = if prev_root? then ('"prev_root":"' + prev_root + '",') else ""
     obj_s = """{#{pr}"tab":#{tab_s},"type":#{type}}"""
-    obj = { tab, type }
+
+    # Insert keys in albhabetical order
+    obj = {}
     obj.prev_root if prev_root?
+    obj.tab = tab
+    obj.type = type 
+
     key = hasher(obj_s)
     return { key, obj, obj_s }
 
@@ -287,7 +292,9 @@ exports.Base = class Base
 
     if sorted_map?
       # Store the leaf
-      await @hash_tree_r { level, sorted_map }, esc defer tmp
+      arg = { level, sorted_map }
+      arg.prev_root = prev_root if (path.length is 1 and path[0][1].type is node_types.LEAF)
+      await @hash_tree_r arg, esc defer tmp
       h = tmp
 
       # Store back up to the root
@@ -352,12 +359,14 @@ exports.Base = class Base
 
   #-----------------------------------------
 
-  hash_tree_r : ({level, sorted_map }, cb) ->
+  hash_tree_r : ({level, sorted_map, prev_root }, cb) ->
     err = null
     key = null
 
     if sorted_map.len() <= @config.N
-      {key, obj, obj_s} = sorted_map.to_hash { @hasher, type : node_types.LEAF }
+      arg = { prev_root, @hasher, type : node_types.LEAF }
+      arg.prev_root = prev_root if level is 0
+      {key, obj, obj_s} = sorted_map.to_hash arg
       await @store_node { key, obj, obj_s }, defer err
     else
       M = @config.M  # the number of children we have
@@ -377,7 +386,9 @@ exports.Base = class Base
           prefix = @prefix_through_level { level, obj : sublist.at(0) }
           new_sorted_map.push { key : prefix, val : h }
       unless err?
-        {key, obj, obj_s} = new_sorted_map.to_hash { @hasher, type : node_types.INODE }
+        arg = {  @hasher, type : node_types.INODE }
+        arg.prev_root = prev_root if (level is 0)
+        {key, obj, obj_s} = new_sorted_map.to_hash arg
         await @store_node { key, obj, obj_s }, defer err
 
     cb err, key
