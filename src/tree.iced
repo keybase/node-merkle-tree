@@ -134,7 +134,7 @@ exports.SortedMap = class SortedMap
 
   #------------------------------------
 
-  to_hash : ({hasher, type, prev_root} ) ->
+  to_hash : ({hasher, type, prev_root, level} ) ->
     JS = JSON.stringify
     type or= @_type
     parts = []
@@ -148,7 +148,10 @@ exports.SortedMap = class SortedMap
 
     # Insert keys in albhabetical order
     obj = {}
-    obj.prev_root if prev_root?
+
+    # Only need to store prev_root at the root level (and if it exists)
+    obj.prev_root if prev_root? and level? and level is 0
+
     obj.tab = tab
     obj.type = type 
 
@@ -276,10 +279,12 @@ exports.Base = class Base
     last = null
     path = []
 
-    # Find the path from the key up to the root
+    # Find the path from the key up to the root;
+    # find by walking down from the root
+    level = 0
     while curr?
-      p = @prefix_through_level { key, level : path.length }
-      path.push [ p, curr ] 
+      p = @prefix_through_level { key, level }
+      path.push [ p, curr, level++ ] 
       last = curr
       if (nxt = curr.tab[p])?
         await @lookup_node { key : nxt }, esc defer curr
@@ -297,20 +302,16 @@ exports.Base = class Base
     else [ null, 0 ]
 
     if sorted_map?
-      # Store the leaf; always pass the prev_root since the hash_tree_r
-      # function only stores it when level=0
       await @hash_tree_r {level, sorted_map, prev_root}, esc defer tmp
       h = tmp
 
       # Store back up to the root
       path.reverse()
 
-      for [ p, curr ],i in path when (curr.type is node_types.INODE)
+      for [ p, curr , level ] in path when (curr.type is node_types.INODE)
         sm = (new SortedMap { node : curr }).replace { key : p, val : h }
 
-        arg = { @hasher }
-        arg.prev_root = prev_root if i is (path.length - 1)
-        {key, obj, obj_s} = sm.to_hash arg
+        {key, obj, obj_s} = sm.to_hash { @hasher, prev_root, level }
 
         h = key
         await @store_node { key, obj, obj_s }, esc defer()
@@ -368,13 +369,8 @@ exports.Base = class Base
     err = null
     key = null
 
-    to_hash_arg = (type) => 
-      arg = { prev_root, @hasher, type }
-      arg.prev_root = prev_root if level is 0
-      arg
-
     if sorted_map.len() <= @config.N
-      {key, obj, obj_s} = sorted_map.to_hash to_hash_arg node_types.LEAF
+      {key, obj, obj_s} = sorted_map.to_hash { prev_root, @hasher, level, type : node_types.LEAF }
       await @store_node { key, obj, obj_s }, defer err
     else
       M = @config.M  # the number of children we have
@@ -394,7 +390,7 @@ exports.Base = class Base
           prefix = @prefix_through_level { level, obj : sublist.at(0) }
           new_sorted_map.push { key : prefix, val : h }
       unless err?
-        {key, obj, obj_s} = new_sorted_map.to_hash to_hash_arg node_types.INODE
+        {key, obj, obj_s} = new_sorted_map.to_hash { prev_root, @hasher, level, type : node_types.INODE }
         await @store_node { key, obj, obj_s }, defer err
 
     cb err, key
