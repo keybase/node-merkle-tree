@@ -4,13 +4,13 @@
 Version: GnuPG/MacGPG2 v2.0.22 (Darwin)
 Comment: GPGTools - https://gpgtools.org
 
-iQEcBAABCgAGBQJTovsQAAoJEJgKPw0B/gTfYFgIAMS/ad2ZvLl9989zBhI5G0/x
-R76XCfOG9tzxYgFBlFmxTgmROceBi49FYmkbMi3qfEaKtpi84R1IbuLs7MU3vv0D
-teGilggwagRTbxgwhbUGKMd1519DaM3AKZUNnuJ9Vk/Agya/9++G1PUn5DHl7Vqw
-MmA619QdaqWfUwAbkK+ZOkpZrcU64juUwDjcR41N6urjaPsRePfeHQOd4zDFxlP4
-o9a7+QiyPlG7UmEN3edRVrWMvcBYTJiKREvUkli1ZpXVsZ4Rwi4AJXE70O6ToMZg
-+dfLz265vdMXR/XkD8rBOVg9cJC8NJrC56KvsLaeK1hKQ/TgcK6R5d+7wYU+n+A=
-=VZg6
+iQEcBAABCgAGBQJTozQNAAoJEJgKPw0B/gTfdDgH/1KFffSZkvdZNXM8x0t97vZ3
+rObqjYeMVt6JT1r2YbJrbJQaXRI7hewEminhPtixPzbp9ON1OUiOBbld0lneRL1k
+0grtP1lvbf1mDCasn7rFrvyxdIKxS3vY5SfKHoae1/6r5FQ6fXWhh3PM9BnWFEfl
+iDtRl/l4vXxEot0j+qU+875JvxEBaxWTfEMWqn5LdmQmKEyAe7VmhRfFClrNALvi
+QQhA/hQGdHe7Wj3szyZcbjsTgO37aUlL6mRfZvQE0Gf17ApEStLznam5y7QAPmgY
+wJ/z6arAPLvCo5+OHyCxn6tc4eFSujp7XnAoK/7MsTTy4hPzpPpbXx6XncE+H/w=
+=7Ie0
 -----END PGP SIGNATURE-----
 
 ```
@@ -25,19 +25,19 @@ o9a7+QiyPlG7UmEN3edRVrWMvcBYTJiKREvUkli1ZpXVsZ4Rwi4AJXE70O6ToMZg
 size   exec  file                     contents                                                        
              ./                                                                                       
 547            .gitignore             a3260451040bdf523be635eac16d28044d0064c4e8c4c444b0a49b9258851bec
-247            CHANGELOG.md           6b84f2a9e0162f9f387e0f75b6f7af3237303c0038ce6f4bba4113fd483b29e0
+333            CHANGELOG.md           4e130c4c544a66444371a4177aa00d899dbe05c924fcbe6bff6ae012c13a0e58
 1482           LICENSE                9395652c11696e9a59ba0eac2e2cb744546b11f9a858997a02701ca91068d867
 393            Makefile               069be562c87112459ea09e88b442355fb08ffdbacb38c9acc35f688f7bc75e09
 67             README.md              45eb09507031120206ab8d1463725c822b60d6109fd2e34eadf792e81917a292
                lib/                                                                                   
 299              main.js              40ca05af21bfbdfe551411d5c492aaeb8d405ae11055875c1bcdf474edd62b9f
 1932             mem.js               c23ce8608a17e23371e52b3b80e87441e93bcd802b11f8ea7493e259d22f8543
-32511            tree.js              cc864352c4b786b4f7da6cda32ce4d54a57f78e20ba37bd62ea570a0f023e1a9
-836            package.json           74373415a498e553fee8c4172fe19963c37b31f231f839886d3bdcfa2c021f7f
+33324            tree.js              ad52f7fc1754647a1e747b34c35ce749cc4a5a7137fb645b16241698fe22924b
+836            package.json           16090220b9db6b5e2db299f5b34fae555ba9cdb5b3475af3b209e165a6aa35be
                src/                                                                                   
 104              main.iced            f52112db1bdab29276374d4f4d39eab83c1b0a8db2955dc0e23aadbfb43d4b47
 1011             mem.iced             f4f664a2e82498a312f59a6ae72caf3a5e4cc136be7967e88398e44f6b8de34b
-10486            tree.iced            9990768193e5e1af8e9c4271c14d622d2fa3532e922baa8723b680ed2a1924bb
+10590            tree.iced            6056a33f87cebd1e7d6cd2e6442e01c51855bd4e0bd3dc551a7fa28b032ae6e3
                test/                                                                                  
                  files/                                                                               
 2118               0_simple.iced      5ecbf097a879d9aacf951511b7c2a81e8d405c13704df4d7cd56baaf2aeb2660
