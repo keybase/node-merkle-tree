@@ -22,7 +22,13 @@ log_16 = (y) ->
 
 #------------------------------------
 
-JSS = (x) -> json_stringify_sorted x, { sort_fn : my_cmp }
+# Special case JSon-Sorted-Stringification for the known object types.
+# this is faster than using 'my_cmp' below.  Only matters if we're not
+# skipping hash verifications on loads.
+JSS = (x) -> 
+  inner = (y) -> json_stringify_sorted y, { sort_fn : hex_cmp }
+  pr = if x.prev_root? then ('"prev_root":"' + x.prev_root + '",') else ""
+  """{#{pr}"tab":#{inner(x.tab)},"type":#{inner(x.type)}}"""
 
 #------------------------------------
 
@@ -291,10 +297,9 @@ exports.Base = class Base
     else [ null, 0 ]
 
     if sorted_map?
-      # Store the leaf
-      arg = { level, sorted_map }
-      arg.prev_root = prev_root if (path.length is 1 and path[0][1].type is node_types.LEAF)
-      await @hash_tree_r arg, esc defer tmp
+      # Store the leaf; always pass the prev_root since the hash_tree_r
+      # function only stores it when level=0
+      await @hash_tree_r {level, sorted_map, prev_root}, esc defer tmp
       h = tmp
 
       # Store back up to the root
@@ -363,10 +368,13 @@ exports.Base = class Base
     err = null
     key = null
 
-    if sorted_map.len() <= @config.N
-      arg = { prev_root, @hasher, type : node_types.LEAF }
+    to_hash_arg = (type) => 
+      arg = { prev_root, @hasher, type }
       arg.prev_root = prev_root if level is 0
-      {key, obj, obj_s} = sorted_map.to_hash arg
+      arg
+
+    if sorted_map.len() <= @config.N
+      {key, obj, obj_s} = sorted_map.to_hash to_hash_arg node_types.LEAF
       await @store_node { key, obj, obj_s }, defer err
     else
       M = @config.M  # the number of children we have
@@ -386,9 +394,7 @@ exports.Base = class Base
           prefix = @prefix_through_level { level, obj : sublist.at(0) }
           new_sorted_map.push { key : prefix, val : h }
       unless err?
-        arg = {  @hasher, type : node_types.INODE }
-        arg.prev_root = prev_root if (level is 0)
-        {key, obj, obj_s} = new_sorted_map.to_hash arg
+        {key, obj, obj_s} = new_sorted_map.to_hash to_hash_arg node_types.INODE
         await @store_node { key, obj, obj_s }, defer err
 
     cb err, key
