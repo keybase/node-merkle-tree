@@ -1,3 +1,10 @@
+## 0.0.13
+
+Bugfixes:
+
+  - bugs in comments
+
+
 ## 0.0.12 (2014-06-20)
 
 Bugfixes:

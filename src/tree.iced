@@ -205,7 +205,7 @@ exports.Config = class Config
     @M = M or 256
     @N = N or 256
 
-    # If we have 2^M children per node, how many hex chars does it take to
+    # If we have M children per node, how many hex chars does it take to
     # represent it?
     @C = log_16 @M
 
