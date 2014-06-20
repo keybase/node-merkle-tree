@@ -1,3 +1,9 @@
+## 0.0.12 (2014-06-20)
+
+Bugfixes:
+
+  - Don't fixate on a runtime
+
 ## 0.0.11 (2014-06-19)
 
 Features:
