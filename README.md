@@ -92,8 +92,8 @@ implements the following methods of the `Base` class to do so:
     you are also passed `obj_s`, the stringification of the object.
   - `lookup_node({key},cb)` --- Read from disk the node whose key is key.  Callback with the parsed
     (not stringified) object
-  - `lookup_root(cb)` --- Read the key value for the root of the tree.
-  - `commit_root({key,txinfo}, cb)` --- Store the root key value to disk, optionally with the `txinfo`
+  - `lookup_root(cb)` --- Should callback with the hash of the most recent tree root.
+  - `commit_root({key,txinfo}, cb)` --- Store the root hash to disk, optionally with the `txinfo`
     transaction info annotation.
 
 For an example of how to do this, see the simple [MemTree](https://github.com/keybase/node-merkle-tree/blob/master/src/mem.iced) class.
