@@ -41,7 +41,7 @@ var key = "961b6dd3ede3cb8ecbaacbd68de040cd78eb2ed5889130cceb4c49268ea4d506";
 var value = { "foo" : 10 };
 
 // We're just inserting one, but you can insert as many as you'd like.
-myTree.upsert({key, value}, function(err, new_root_hash) {
+myTree.upsert({'key' : key, 'value' : value}, function(err, new_root_hash) {
 	// Finding by default checks the hashes on all interior nodes down the tree.
 	// If you want to speed up your 'finds', then you can pass `skip_verify : true`
 	// to your find.
