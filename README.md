@@ -83,7 +83,7 @@ The `Base` class has the following method calls:
 
 ## How to Make an On-Disk Tree
 
-The [keybase client](https://github.com/keybase/node-client) stores its Merkle tree on disk.  It
+The [keybase server](https://keybase.io) stores its Merkle tree on disk.  It
 implements the following methods of the `Base` class to do so:
 
   - `hash_fn(s)` -- A function to hash an interior node into a key.  Return the hex-string hash of the
