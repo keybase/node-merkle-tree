@@ -210,7 +210,17 @@ exports.Config = class Config
     @C = log_16 @M
 
   #---------------------------------
-  
+
+  obj_to_key : (o) -> o[0]
+
+  prefix_at_level : ({level, key, obj}) -> 
+    key or= @obj_to_key obj
+    key[(level*@C)...(level+1)*@C]
+
+  prefix_through_level : ({level, key, obj}) -> 
+    key or= @obj_to_key obj
+    key[0...(level+1)*@C] 
+
 ##=======================================================================
 
 exports.Base = class Base
@@ -240,19 +250,7 @@ exports.Base = class Base
   #    such as signatures or sequence numbers.
   lookup_root : (                          cb) -> @unimplemented()
 
-  #-----------------------------------------
 
-  obj_to_key : (o) -> o[0]
-
-  prefix_at_level : ({level, key, obj}) -> 
-    C = @config.C
-    key or= @obj_to_key obj
-    key[(level*C)...(level+1)*C]
-
-  prefix_through_level : ({level, key, obj}) -> 
-    key or= @obj_to_key obj
-    C = @config.C
-    key[0...(level+1)*C]
 
   #-----------------------------------------
 
@@ -283,7 +281,7 @@ exports.Base = class Base
     # find by walking down from the root
     level = 0
     while curr?
-      p = @prefix_through_level { key, level }
+      p = @config.prefix_through_level { key, level }
       path.push [ p, curr, level++ ] 
       last = curr
       if (nxt = curr.tab[p])?
@@ -346,7 +344,7 @@ exports.Base = class Base
         val = node.tab[key]
         curr = null
       else
-        p = @prefix_through_level { key, level }
+        p = @config.prefix_through_level { key, level }
         curr = node.tab[p]
       level++
 
@@ -381,14 +379,14 @@ exports.Base = class Base
       for i in [0...M]
         prefix = format_hex i, C
         start = j
-        while j < sorted_map.len() and (@prefix_at_level({ level, obj : sorted_map.at(j) }) is prefix)
+        while j < sorted_map.len() and (@config.prefix_at_level({ level, obj : sorted_map.at(j) }) is prefix)
           j++
         end = j
         if end > start
           sublist = sorted_map[start...end]
           await @hash_tree_r { level : (level+1), sorted_map : sublist }, defer err, h
           break if err?
-          prefix = @prefix_through_level { level, obj : sublist.at(0) }
+          prefix = @config.prefix_through_level { level, obj : sublist.at(0) }
           new_sorted_map.push { key : prefix, val : h }
       unless err?
         {key, obj, obj_s} = new_sorted_map.to_hash { prev_root, @hasher, level, type : node_types.INODE }
