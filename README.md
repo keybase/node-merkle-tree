@@ -34,7 +34,7 @@ var merkle_mod = require('merkle-tree');
 // M = the number of children per interior node.
 // N = the maximum number of leaves before a resplit.
 var config = new merkle_mod.Config({ N : 4, M : 16 });
-var myTree = new MemTree(config);
+var myTree = new merkle_mod.MemTree(config);
 
 // Keys are hashes expressed as hex strings.
 var key = "961b6dd3ede3cb8ecbaacbd68de040cd78eb2ed5889130cceb4c49268ea4d506";
