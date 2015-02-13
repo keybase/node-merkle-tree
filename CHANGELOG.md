@@ -1,3 +1,9 @@
+## 0.0.14 (2015-02-13)
+
+Bugfixes:
+
+   - proper errors if unimplemented
+
 ## 0.0.13 (2014-10-13)
 
 Bugfixes:
@@ -5,7 +11,7 @@ Bugfixes:
   - bugs in comments
 
 Refactor:
-  
+
   - can access the prefix-computation code with only a config, no tree
     needeed.
 

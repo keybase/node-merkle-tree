@@ -6,7 +6,7 @@ deq = require 'deep-equal'
 
 ##=======================================================================
 
-exports.node_types = node_types = 
+exports.node_types = node_types =
   NONE : 0
   INODE : 1
   LEAF : 2
@@ -25,7 +25,7 @@ log_16 = (y) ->
 # Special case JSon-Sorted-Stringification for the known object types.
 # this is faster than using 'my_cmp' below.  Only matters if we're not
 # skipping hash verifications on loads.
-JSS = (x) -> 
+JSS = (x) ->
   inner = (y) -> json_stringify_sorted y, { sort_fn : hex_cmp }
   pr = if x.prev_root? then ('"prev_root":"' + x.prev_root + '",') else ""
   """{#{pr}"tab":#{inner(x.tab)},"type":#{inner(x.type)}}"""
@@ -50,7 +50,7 @@ hex_len = (a) ->
 
 map = {
   0 : 0, 1 : 1, 2 : 2 , 3 : 3, 4 : 4, 5 : 5, 6 : 6, 7 : 7,
-  8 : 8, 9 : 9, a : 10, b : 11, c : 12, d : 13, e : 14, f : 15 
+  8 : 8, 9 : 9, a : 10, b : 11, c : 12, d : 13, e : 14, f : 15
 }
 
 #----------------------------------
@@ -105,7 +105,7 @@ exports.SortedMap = class SortedMap
       @_list = sorted_list
 
     if key? and val?
-      @_list = [ [ key, val] ] 
+      @_list = [ [ key, val] ]
 
     if list? and not @_list?
       sorted = true
@@ -153,7 +153,7 @@ exports.SortedMap = class SortedMap
     obj.prev_root if prev_root? and level? and level is 0
 
     obj.tab = tab
-    obj.type = type 
+    obj.type = type
 
     key = hasher(obj_s)
     return { key, obj, obj_s }
@@ -170,7 +170,7 @@ exports.SortedMap = class SortedMap
       c = hex_cmp key, @_list[mid][0]
       if c > 0
         beg = mid + 1
-      else 
+      else
         end = mid
 
     c = hex_cmp key, @_list[beg][0]
@@ -186,7 +186,7 @@ exports.SortedMap = class SortedMap
   #------------------------------------
 
   replace : ({key, val}) ->
-    if @_list.length 
+    if @_list.length
       [ index, eq ] = @binary_search { key }
       @_list = @_list[0...index].concat([[key,val]]).concat(@_list[(index+eq)...])
     else
@@ -213,20 +213,20 @@ exports.Config = class Config
 
   obj_to_key : (o) -> o[0]
 
-  prefix_at_level : ({level, key, obj}) -> 
+  prefix_at_level : ({level, key, obj}) ->
     key or= @obj_to_key obj
     key[(level*@C)...(level+1)*@C]
 
-  prefix_through_level : ({level, key, obj}) -> 
+  prefix_through_level : ({level, key, obj}) ->
     key or= @obj_to_key obj
-    key[0...(level+1)*@C] 
+    key[0...(level+1)*@C]
 
 ##=======================================================================
 
 exports.Base = class Base
 
   #---------------------------------
-  
+
   constructor : ({config}) ->
     @config = config or (new Config {})
     @_lock = new Lock
@@ -238,17 +238,17 @@ exports.Base = class Base
 
   #---------------------------------
 
-  hash_fn     : (s                           ) -> @unimplemented()
-  store_node  : ({key, obj, obj_s},        cb) -> @unimplemented()
-  commit_root : ({key, txinfo, prev_root}, cb) -> @unimplemented()
-  lookup_node : ({key},                    cb) -> @unimplemented()
+  hash_fn     : (s                           ) -> cb @unimplemented()
+  store_node  : ({key, obj, obj_s},        cb) -> cb @unimplemented()
+  commit_root : ({key, txinfo, prev_root}, cb) -> cb @unimplemented()
+  lookup_node : ({key},                    cb) -> cb @unimplemented()
 
   # Callback cb with an <err,String,Object> triple.
   #  The err is set is an error was encountered.
   #  The String is the hash of the root.
   #  The Object, optional, is the the other data stored at the root node,
   #    such as signatures or sequence numbers.
-  lookup_root : (                          cb) -> @unimplemented()
+  lookup_root : (                          cb) -> cb @unimplemented()
 
 
 
@@ -282,7 +282,7 @@ exports.Base = class Base
     level = 0
     while curr?
       p = @config.prefix_through_level { key, level }
-      path.push [ p, curr, level++ ] 
+      path.push [ p, curr, level++ ]
       last = curr
       if (nxt = curr.tab[p])?
         await @lookup_node { key : nxt }, esc defer curr
