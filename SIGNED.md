@@ -1,15 +1,15 @@
 ##### Signed by https://keybase.io/max
 ```
 -----BEGIN PGP SIGNATURE-----
-Version: GnuPG v2
+Comment: GPGTools - https://gpgtools.org
 
-iQEcBAABAgAGBQJUPCLLAAoJEJgKPw0B/gTfWOkH/RJR3HCSJn5GU5cmC/wku5F3
-zb2C++L0l5av4N7VbhkgK/QnWOUGz6vv1ploWud53RtKG0/JBzpDZ1U/fm7uSlDQ
-G2p6BSPK+jdcIv03Gkriy4763+JUPcCbH4XaUmT3u2B9lmlOoar9dCuLY0UUJvxi
-Zld5ByXfcy37K3sxxQNBu+XnzXTr1G3tyEFCjga7HYuyJD2z6GwEfbT/hTP10uhH
-vXIGeQIucts3/7ZYr7SBSHP/MPGJlvOPjMk8jyBtS8lbOTfIh5+NCDwKVJS58pCD
-eaMXt5+9Pm7OnWw0p14Y3giE4Y2ciECcDzMtJhf8Dcd9F6mU486bSu3CC4NfeOM=
-=W36o
+iQEcBAABCgAGBQJU3iLhAAoJEJgKPw0B/gTfY3QIAI1N1zHftcBgf5IDlqLgidoi
+jBOFtXLLSpn6VIlIqIvgb/jPE2orkMi9fQ+ydf1w77LysTWaRYIUmkDljayjcA48
+aMuYB8n6LHcSEIH3yQHhKCyG8vrarJJ47lHai3f7af12+owZEZgo7OoX49tHtfBK
+vXeLsrnMhW+w18spLgWTxpAM/Kqlm/xbNWwgpde6h1CuwYgEydc3i6y4b+X/Fpeo
+W1k3sd/Vu89wOz3RT+czBlVC9GDifFyAG//eZxum86ZmwnpcGKVRNGRO4mFaNazw
+rabsdZx7Tc16yUL8SU0F5Ah9SiAZzLuTO6r+nj1E6xz7vTnI22divAfkYyvhRWE=
+=PWTH
 -----END PGP SIGNATURE-----
 
 ```
@@ -24,19 +24,19 @@ eaMXt5+9Pm7OnWw0p14Y3giE4Y2ciECcDzMtJhf8Dcd9F6mU486bSu3CC4NfeOM=
 size   exec  file                     contents                                                        
              ./                                                                                       
 547            .gitignore             a3260451040bdf523be635eac16d28044d0064c4e8c4c444b0a49b9258851bec
-554            CHANGELOG.md           14859a17246ff3ab4fb81953595e5a681c968ac94bc6c14c087610f4986974b5
+624            CHANGELOG.md           7031de48cb3660d020d12d51a73cb0fdc3e25ffe728c0a53a468af607bade679
 1482           LICENSE                9395652c11696e9a59ba0eac2e2cb744546b11f9a858997a02701ca91068d867
 393            Makefile               069be562c87112459ea09e88b442355fb08ffdbacb38c9acc35f688f7bc75e09
-3618           README.md              490ce837ca7f2b98cd092034fdc8aaf0a8c67d19141c55abd80c3b7763b0b087
+3629           README.md              73a273ed77aee98d6dd9820f6c57e3eeb2241bce77b2e0a8dde2c554549b8941
                lib/                                                                                   
 299              main.js              40ca05af21bfbdfe551411d5c492aaeb8d405ae11055875c1bcdf474edd62b9f
 1932             mem.js               c23ce8608a17e23371e52b3b80e87441e93bcd802b11f8ea7493e259d22f8543
-33295            tree.js              d1c074fa02c0361a5c06c2e466f0406459ee4254e814cff8a93f5c3a53cf2d06
-838            package.json           d34861757b6972c9e3314e9bdd826292b97928f729ef376ead2e47937b1280a7
+33337            tree.js              29ebef75c8ab727857deaba2120b38e55b94d336eb51cfab988e4e66ba0cca70
+838            package.json           e59cd5ef84507ee6121eea6b7a166824a6a6d0709ed333c26f086e4c2509393d
                src/                                                                                   
 104              main.iced            f52112db1bdab29276374d4f4d39eab83c1b0a8db2955dc0e23aadbfb43d4b47
 1011             mem.iced             f4f664a2e82498a312f59a6ae72caf3a5e4cc136be7967e88398e44f6b8de34b
-10538            tree.iced            be0201b8a8622fd85f32550550cd1bcca10d731ab9c05329f4ce65a420975482
+10540            tree.iced            6eade86028b1608aee6f91544c6caae625ebdaae54fda37557046b96f321b689
                test/                                                                                  
                  files/                                                                               
 2118               0_simple.iced      5ecbf097a879d9aacf951511b7c2a81e8d405c13704df4d7cd56baaf2aeb2660
