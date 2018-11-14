@@ -1,3 +1,7 @@
+## 1.0.1 (2018-11-14)
+
+- Also pass txinfo through full tree rebuilds
+
 ## 1.0.0 (2018-11-14)
 
 - Pass in txinfo to lookup_root too; it's optional, it will only be filled

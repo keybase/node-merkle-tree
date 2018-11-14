@@ -350,14 +350,14 @@ exports.Base = class Base
 
   #-----------------------------------------
 
-  build : ({sorted_map}, cb) ->
+  build : ({sorted_map, txinfo}, cb) ->
     # All happens with a lock
     cb = chain_err cb, @unlock.bind(@)
     esc = make_esc cb, "full_build"
     await @_lock.acquire defer()
-    await @lookup_root {}, esc defer prev_root
+    await @lookup_root { txinfo }, esc defer prev_root
     await @hash_tree_r { level : 0, sorted_map, prev_root }, esc defer h
-    await @commit_root { key : h, prev : prev_root }, esc defer()
+    await @commit_root { key : h, prev : prev_root, txinfo }, esc defer()
     cb null
 
   #-----------------------------------------
