@@ -1,3 +1,8 @@
+## 1.0.0 (2018-11-14)
+
+- Pass in txinfo to lookup_root too; it's optional, it will only be filled
+  in on an upsert.
+
 ## 0.0.14 (2015-02-13)
 
 Bugfixes:

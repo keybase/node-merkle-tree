@@ -248,9 +248,7 @@ exports.Base = class Base
   #  The String is the hash of the root.
   #  The Object, optional, is the the other data stored at the root node,
   #    such as signatures or sequence numbers.
-  lookup_root : (                          cb) -> cb @unimplemented()
-
-
+  lookup_root : ({txinfo},                 cb) -> cb @unimplemented()
 
   #-----------------------------------------
 
@@ -268,7 +266,7 @@ exports.Base = class Base
     await @_lock.acquire defer()
 
     # Now find the root
-    await @lookup_root esc defer root
+    await @lookup_root {txinfo}, esc defer root
     prev_root = root
     curr = null
     if root?
@@ -334,7 +332,7 @@ exports.Base = class Base
   find : ({key, skip_verify}, cb) ->
     esc = make_esc cb, "find"
     val = null
-    await @lookup_root esc defer curr, root_obj
+    await @lookup_root {}, esc defer curr, root_obj
     level = 0
     while curr?
       await @lookup_node { key : curr }, esc defer node
@@ -357,7 +355,7 @@ exports.Base = class Base
     cb = chain_err cb, @unlock.bind(@)
     esc = make_esc cb, "full_build"
     await @_lock.acquire defer()
-    await @lookup_root esc defer prev_root
+    await @lookup_root {}, esc defer prev_root
     await @hash_tree_r { level : 0, sorted_map, prev_root }, esc defer h
     await @commit_root { key : h, prev : prev_root }, esc defer()
     cb null

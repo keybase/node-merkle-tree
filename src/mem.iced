@@ -11,7 +11,7 @@ exports.MemTree = class MemTree extends Base
     @_root = null
     @_nodes = {}
 
-  hash_fn : (s) -> 
+  hash_fn : (s) ->
     h = createHash('SHA512')
     h.update(s)
     ret = h.digest().toString('hex')
@@ -29,7 +29,7 @@ exports.MemTree = class MemTree extends Base
     err = if ret? then null else new Error 'not found'
     cb err, ret
 
-  lookup_root : (cb) ->
+  lookup_root : ({txinfo}, cb) ->
     cb null, @_root
 
   commit_root : ({key}, cb) ->
