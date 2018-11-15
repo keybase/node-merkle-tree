@@ -316,7 +316,7 @@ exports.Base = class Base
       await @commit_root {key : h, txinfo, prev_root }, esc defer()
       ret = h
 
-    cb null, ret
+    cb null, ret, prev_root
 
   #-----------------------------------------
 

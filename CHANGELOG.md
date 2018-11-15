@@ -1,3 +1,7 @@
+## 1.0.2 (2018-11-15)
+
+- Passback prev root also
+
 ## 1.0.1 (2018-11-14)
 
 - Also pass txinfo through full tree rebuilds
