@@ -1,3 +1,7 @@
+## 1.0.3 (2018-11-15)
+
+- Passback root from fullbuild
+
 ## 1.0.2 (2018-11-15)
 
 - Passback prev root also

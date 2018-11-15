@@ -358,7 +358,7 @@ exports.Base = class Base
     await @lookup_root { txinfo }, esc defer prev_root
     await @hash_tree_r { level : 0, sorted_map, prev_root }, esc defer h
     await @commit_root { key : h, prev : prev_root, txinfo }, esc defer()
-    cb null
+    cb null, h
 
   #-----------------------------------------
 
