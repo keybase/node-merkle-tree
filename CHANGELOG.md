@@ -1,3 +1,7 @@
+## 1.0.4 (2018-11-16)
+
+- Recompile with modern ICS (it was quite ancient previously)
+
 ## 1.0.3 (2018-11-15)
 
 - Passback root from fullbuild

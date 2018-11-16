@@ -30,8 +30,8 @@
     "iced-utils": ">=0.1.11"
   },
   "devDependencies": {
-    "sprintf": "^0.1.3",
-    "iced-coffee-script": "^1.7.1-c",
-    "iced-test": ">=0.0.12"
+    "iced-coffee-script": "^108.0.11",
+    "iced-test": ">=0.0.12",
+    "sprintf": "^0.1.3"
   }
 }
