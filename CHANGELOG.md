@@ -1,3 +1,7 @@
+## 1.0.5 (2019-02-01)
+
+- Use Buffer.allow, not (new Buffer)
+
 ## 1.0.4 (2018-11-16)
 
 - Recompile with modern ICS (it was quite ancient previously)

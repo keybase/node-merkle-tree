@@ -33,7 +33,7 @@ JSS = (x) ->
 #------------------------------------
 
 format_hex = (i, len) ->
-  buf = new Buffer 4
+  buf = Buffer.alloc 4
   buf.writeUInt32BE i, 0
   buf.toString('hex')[(8 - len)...]
 
